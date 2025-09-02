@@ -1,11 +1,12 @@
-﻿namespace SampleWeightedSelection;
+﻿using Gufel.WeightedSelection.Abstract;
+using Gufel.WeightedSelection.Model;
+
+namespace Gufel.WeightedSelection.Implement.Algorithm;
 
 
 // Method 1: Simple cumulative weight approach
-public class WeightedRandomSelector(List<WeightedItem> items, int seed) : IWeightedItemSelect
+public class WeightedRandomSelector(List<WeightedItem> items, IRandomNumber random) : IWeightedRandomSelect
 {
-    private readonly Random _random = new(seed);
-
     public WeightedItem SelectItem()
     {
         if (items == null || items.Count == 0)
@@ -15,7 +16,7 @@ public class WeightedRandomSelector(List<WeightedItem> items, int seed) : IWeigh
         if (totalWeight == 0)
             throw new ArgumentException("Total weight cannot be zero");
 
-        var randomValue = _random.NextDouble() * totalWeight;
+        var randomValue = random.NextDouble() * totalWeight;
         double cumulativeWeight = 0;
 
         foreach (var item in items)

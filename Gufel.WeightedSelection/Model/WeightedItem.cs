@@ -1,4 +1,4 @@
-﻿namespace SampleWeightedSelection;
+﻿namespace Gufel.WeightedSelection.Model;
 
 public record WeightedItem(string Name, double Weight)
 {

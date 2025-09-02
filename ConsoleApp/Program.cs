@@ -1,5 +1,9 @@
-﻿
-using SampleWeightedSelection;
+﻿using ConsoleApp;
+using ConsoleTables;
+using Gufel.WeightedSelection.Abstract;
+using Gufel.WeightedSelection.Implement.Algorithm;
+using Gufel.WeightedSelection.Implement.Random;
+using Gufel.WeightedSelection.Model;
 using System.Diagnostics;
 
 Console.WriteLine("Start");
@@ -13,38 +17,41 @@ Console.WriteLine("Running each method exactly 100 times\n");
 var items = new List<WeightedItem>
 {
     new("A1", 10),
-    new WeightedItem("A2", 40),
-    new WeightedItem("A3", 0),
-    new WeightedItem("A4", 0)
+    new("A2", 40),
+    new("A3", 25),
+    new("A4", 25)
 };
 
-const int testRuns = 10000;
-const int seed = 12345; // Fixed seed for reproducible results
+const int testRuns = 100;
+IRandomNumber random = new FastRandom();
 
 // Test Method 1: Simple Cumulative Selection
 Console.WriteLine("=== METHOD 1: Simple Cumulative Selection ===");
-TestMethod1(items, testRuns, seed);
+TestMethod1(items, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
 // Test Method 2: Pre-computed Cumulative Weights
 Console.WriteLine("=== METHOD 2: Pre-computed Cumulative Weights ===");
-TestMethod2(items, testRuns, seed);
+TestMethod2(items, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
 // Test Method 3: Alias Method
 Console.WriteLine("=== METHOD 3: Alias Method ===");
-TestMethod3(items, testRuns, seed);
+TestMethod3(items, testRuns, random);
+
+TotalPrintResults();
 
 Console.WriteLine("\n" + new string('=', 60));
+
 Console.WriteLine("Test completed. Press any key to exit...");
 Console.ReadKey();
 
 
-static void TestMethod1(List<WeightedItem> items, int testRuns, int seed)
+static void TestMethod1(List<WeightedItem> items, int testRuns, IRandomNumber random)
 {
-    var selector = new WeightedRandomSelector(items, seed);
+    var selector = new WeightedRandomSelector(items, random);
     var results = new Dictionary<string, int>();
     var stopwatch = Stopwatch.StartNew();
 
@@ -58,13 +65,13 @@ static void TestMethod1(List<WeightedItem> items, int testRuns, int seed)
     stopwatch.Stop();
 
     // Print results
-    PrintResults("Simple Cumulative Selection", results, testRuns, stopwatch.ElapsedTicks, items);
+    PrintResults("Simple Cumulative Selection", results, testRuns, stopwatch.ElapsedTicks, items, 0);
 }
 
-static void TestMethod2(List<WeightedItem> items, int testRuns, int seed)
+static void TestMethod2(List<WeightedItem> items, int testRuns, IRandomNumber random)
 {
     var stopwatch = Stopwatch.StartNew();
-    var selector = new PreComputedWeightedSelector(items, seed);
+    var selector = new PreComputedWeightedSelector(items, random);
     var setupTime = stopwatch.ElapsedTicks;
 
     var results = new Dictionary<string, int>();
@@ -79,14 +86,14 @@ static void TestMethod2(List<WeightedItem> items, int testRuns, int seed)
     stopwatch.Stop();
 
     // Print results
-    Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
-    PrintResults("Pre-computed Cumulative Weights", results, testRuns, stopwatch.ElapsedTicks - setupTime, items);
+    //Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
+    PrintResults("Pre-computed Cumulative Weights", results, testRuns, stopwatch.ElapsedTicks - setupTime, items, setupTime);
 }
 
-static void TestMethod3(List<WeightedItem> items, int testRuns, int seed)
+static void TestMethod3(List<WeightedItem> items, int testRuns, IRandomNumber random)
 {
     var stopwatch = Stopwatch.StartNew();
-    var selector = new AliasMethodSelector(items, seed);
+    var selector = new AliasMethodSelector(items, random);
     var setupTime = stopwatch.ElapsedTicks;
 
     var results = new Dictionary<string, int>();
@@ -101,15 +108,22 @@ static void TestMethod3(List<WeightedItem> items, int testRuns, int seed)
     stopwatch.Stop();
 
     // Print results
-    Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
-    PrintResults("Alias Method", results, testRuns, stopwatch.ElapsedTicks - setupTime, items);
+    //Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
+    PrintResults("Alias Method", results, testRuns, stopwatch.ElapsedTicks - setupTime, items, setupTime);
 }
 
-static void PrintResults(string methodName, Dictionary<string, int> results, int totalRuns, long elapsedTicks, List<WeightedItem> originalItems)
+static void PrintResults(string methodName, Dictionary<string, int> results, int totalRuns, long elapsedTicks, List<WeightedItem> originalItems, long setupTime)
 {
     Console.WriteLine($"Method: {methodName}");
-    Console.WriteLine($"Selection time: {elapsedTicks} ticks ({elapsedTicks / 10000.0:F3} ms)");
-    Console.WriteLine($"Average time per selection: {elapsedTicks / (double)totalRuns:F1} ticks ({elapsedTicks / (double)totalRuns / 10000.0:F6} ms)");
+
+    PrintResult.Data.Add(new PrintResultDto(methodName,
+        elapsedTicks,
+        elapsedTicks / 10000.0,
+        elapsedTicks / (double)totalRuns,
+        elapsedTicks / (double)totalRuns / 10000.0, setupTime));
+
+    //Console.WriteLine($"Selection time: {elapsedTicks} ticks ({elapsedTicks / 10000.0:F3} ms)");
+    //Console.WriteLine($"Average time per selection: {elapsedTicks / (double)totalRuns:F1} ticks ({elapsedTicks / (double)totalRuns / 10000.0:F6} ms)");
     Console.WriteLine();
 
     Console.WriteLine("Results:");
@@ -135,4 +149,19 @@ static void PrintResults(string methodName, Dictionary<string, int> results, int
     {
         Console.WriteLine($"WARNING: Total selections ({totalSelections}) doesn't match expected ({totalRuns})!");
     }
+}
+
+static void TotalPrintResults()
+{
+    Console.WriteLine();
+    Console.WriteLine("Total result:");
+    var table = new ConsoleTable("Name", "Elapsed", "Ticks", "Avg Selection", "Avg Selection Ticks", "Setup", "Setup Ticks");
+    foreach (var item in PrintResult.Data)
+    {
+        table.AddRow(item.Name, item.ElapsedTicks, $"{item.Ticks:F3}", $"{item.AvgSelection:F1}",
+            $"{item.AvgSelectionTicks:F6}", item.SetupTime, $"{item.SetupTime / 10000.0:F3}");
+    }
+
+    table.Write();
+    Console.WriteLine();
 }

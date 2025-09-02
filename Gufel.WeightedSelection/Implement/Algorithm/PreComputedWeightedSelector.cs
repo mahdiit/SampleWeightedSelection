@@ -1,16 +1,19 @@
-﻿namespace SampleWeightedSelection;
+﻿using Gufel.WeightedSelection.Abstract;
+using Gufel.WeightedSelection.Model;
+
+namespace Gufel.WeightedSelection.Implement.Algorithm;
 
 // Method 2: Pre-computed cumulative weights (more efficient for multiple selections)
-public class PreComputedWeightedSelector : IWeightedItemSelect
+public class PreComputedWeightedSelector : IWeightedRandomSelect
 {
     private readonly List<WeightedItem> _items;
     private readonly List<double> _cumulativeWeights;
-    private readonly Random _random;
+    private readonly IRandomNumber _random;
 
-    public PreComputedWeightedSelector(List<WeightedItem> items, int? seed = null)
+    public PreComputedWeightedSelector(List<WeightedItem> items, IRandomNumber random)
     {
         _items = items ?? throw new ArgumentNullException(nameof(items));
-        _random = seed.HasValue ? new Random(seed.Value) : new Random();
+        _random = random;
         _cumulativeWeights = [];
 
         BuildCumulativeWeights();
