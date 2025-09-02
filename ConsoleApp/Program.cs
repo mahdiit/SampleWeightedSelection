@@ -43,9 +43,9 @@ TestMethod3(items, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
-// Test Method 4: Simple
-Console.WriteLine("=== METHOD 4: Simple Chat gpt ===");
-TestMethod4(items, testRuns, random);
+//// Test Method 4: Simple
+//Console.WriteLine("=== METHOD 4: Simple Chat gpt ===");
+//TestMethod4(items, testRuns, random);
 
 TotalPrintResults();
 

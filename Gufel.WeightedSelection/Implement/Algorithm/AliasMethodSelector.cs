@@ -9,11 +9,15 @@ public class AliasMethodSelector : IWeightedRandomSelect
     private readonly int[] _alias;
     private readonly double[] _prob;
     private readonly IRandomNumber _random;
-    private readonly List<WeightedItem> _items;
+    private readonly List<WeightedItem> _originItems;
+    private List<WeightedItem> _items;
 
     public AliasMethodSelector(List<WeightedItem> items, IRandomNumber random)
     {
-        _items = items ?? throw new ArgumentNullException(nameof(items));
+        _originItems = items.Select(x => new WeightedItem(x.Name, x.Weight)).ToList();
+        _items = [];
+        CopyFromOrigin();
+
         _random = random;
 
         var n = _items.Count;
@@ -21,6 +25,11 @@ public class AliasMethodSelector : IWeightedRandomSelect
         _prob = new double[n];
 
         BuildAliasTable();
+    }
+
+    private void CopyFromOrigin()
+    {
+        _items = _originItems.Select(x => new WeightedItem(x.Name, x.Weight)).ToList();
     }
 
     private void BuildAliasTable()
@@ -81,6 +90,18 @@ public class AliasMethodSelector : IWeightedRandomSelect
         var n = _items.Count;
         var i = _random.NextInt(n);
 
-        return _random.NextDouble() < _prob[i] ? _items[i] : _items[_alias[i]];
+        var selected = _random.NextDouble() < _prob[i] ? _items[i] : _items[_alias[i]];
+        selected.Use();
+
+        if (selected.HasAny()) return selected;
+
+        _items.Remove(selected);
+
+        if (!_items.Any())
+            CopyFromOrigin();
+
+        BuildAliasTable();
+
+        return selected;
     }
 }

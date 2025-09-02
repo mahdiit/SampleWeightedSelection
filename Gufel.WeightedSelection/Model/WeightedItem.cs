@@ -1,7 +1,22 @@
 ﻿namespace Gufel.WeightedSelection.Model;
 
-public record WeightedItem(string Name, double Weight)
+public class WeightedItem(string name, double weight)
 {
+    private double _used;
+
+    public void Use()
+    {
+        _used++;
+    }
+
+    public bool HasAny()
+    {
+        return _used < Weight;
+    }
+
+    public string Name { get; } = name;
+    public double Weight { get; } = weight;
+
     public override string ToString()
     {
         return $"{Name}: {Weight}%";
