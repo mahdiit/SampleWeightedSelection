@@ -22,7 +22,7 @@ var items = new List<WeightedItem>
     new("A4", 25)
 };
 
-const int testRuns = 100;
+const int testRuns = 1000;
 IRandomNumber random = new FastRandom();
 
 // Test Method 1: Simple Cumulative Selection
@@ -40,6 +40,12 @@ Console.WriteLine("\n" + new string('=', 60) + "\n");
 // Test Method 3: Alias Method
 Console.WriteLine("=== METHOD 3: Alias Method ===");
 TestMethod3(items, testRuns, random);
+
+Console.WriteLine("\n" + new string('=', 60) + "\n");
+
+// Test Method 4: Simple
+Console.WriteLine("=== METHOD 4: Simple Chat gpt ===");
+TestMethod4(items, testRuns, random);
 
 TotalPrintResults();
 
@@ -110,6 +116,25 @@ static void TestMethod3(List<WeightedItem> items, int testRuns, IRandomNumber ra
     // Print results
     //Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
     PrintResults("Alias Method", results, testRuns, stopwatch.ElapsedTicks - setupTime, items, setupTime);
+}
+
+static void TestMethod4(List<WeightedItem> items, int testRuns, IRandomNumber random)
+{
+    var selector = new WeightedRandomSelectorChatGpt(items, random);
+    var results = new Dictionary<string, int>();
+    var stopwatch = Stopwatch.StartNew();
+
+    // Perform selections
+    for (int i = 0; i < testRuns; i++)
+    {
+        var selected = selector.SelectItem();
+        results[selected.Name] = results.GetValueOrDefault(selected.Name, 0) + 1;
+    }
+
+    stopwatch.Stop();
+
+    // Print results
+    PrintResults("Simple Selection ChatGpt", results, testRuns, stopwatch.ElapsedTicks, items, 0);
 }
 
 static void PrintResults(string methodName, Dictionary<string, int> results, int totalRuns, long elapsedTicks, List<WeightedItem> originalItems, long setupTime)
