@@ -3,27 +3,24 @@ using Gufel.WeightedSelection.Model;
 
 namespace Gufel.WeightedSelection.Implement.Algorithm;
 
-// Method 2: Pre-computed cumulative weights (more efficient for multiple selections)
-public class PreComputedWeightedSelector : IWeightedRandomSelect
+public class PreComputedWeightedSelector : WeightedRandomSelectBase
 {
-    private readonly List<WeightedItem> _items;
-    private readonly List<double> _cumulativeWeights;
+    private List<double> _cumulativeWeights;
     private readonly IRandomNumber _random;
 
-    public PreComputedWeightedSelector(List<WeightedItem> items, IRandomNumber random)
+    public PreComputedWeightedSelector(IWeightedItemList list, IRandomNumber random)
+    : base(list)
     {
-        _items = items ?? throw new ArgumentNullException(nameof(items));
         _random = random;
-        _cumulativeWeights = [];
-
-        BuildCumulativeWeights();
+        PreComputedWeightedSelector_OnInitList();
     }
 
-    private void BuildCumulativeWeights()
+    private void PreComputedWeightedSelector_OnInitList()
     {
         double cumulative = 0;
+        _cumulativeWeights = [];
 
-        foreach (var item in _items)
+        foreach (var item in Items)
         {
             cumulative += item.Weight;
             _cumulativeWeights.Add(cumulative);
@@ -33,16 +30,20 @@ public class PreComputedWeightedSelector : IWeightedRandomSelect
             throw new ArgumentException("Total weight cannot be zero");
     }
 
-    public WeightedItem SelectItem()
+    protected override WeightedItem Select()
     {
-        if (_items.Count == 0)
+        if (Items.Count == 0)
             throw new InvalidOperationException("No items to select from");
 
         var randomValue = _random.NextDouble() * _cumulativeWeights.Last();
 
-        // Binary search for better performance with large lists
         var index = BinarySearchCumulative(randomValue);
-        return _items[index];
+        return Items[index];
+    }
+
+    protected override void Init()
+    {
+        PreComputedWeightedSelector_OnInitList();
     }
 
     private int BinarySearchCumulative(double value)

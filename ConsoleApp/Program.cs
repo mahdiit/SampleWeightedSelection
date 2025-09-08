@@ -22,30 +22,32 @@ var items = new List<WeightedItem>
     new("A4", 25)
 };
 
+var listData = new ListData(items);
+
 const int testRuns = 1000;
 IRandomNumber random = new FastRandom();
 
 // Test Method 1: Simple Cumulative Selection
 Console.WriteLine("=== METHOD 1: Simple Cumulative Selection ===");
-TestMethod1(items, testRuns, random);
+TestMethod1(listData, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
 // Test Method 2: Pre-computed Cumulative Weights
 Console.WriteLine("=== METHOD 2: Pre-computed Cumulative Weights ===");
-TestMethod2(items, testRuns, random);
+TestMethod2(listData, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
 // Test Method 3: Alias Method
 Console.WriteLine("=== METHOD 3: Alias Method ===");
-TestMethod3(items, testRuns, random);
+TestMethod3(listData, testRuns, random);
 
 Console.WriteLine("\n" + new string('=', 60) + "\n");
 
-//// Test Method 4: Simple
-//Console.WriteLine("=== METHOD 4: Simple Chat gpt ===");
-//TestMethod4(items, testRuns, random);
+// Test Method 4: Simple
+Console.WriteLine("=== METHOD 4: Simple Chat gpt ===");
+TestMethod4(listData, testRuns, random);
 
 TotalPrintResults();
 
@@ -55,7 +57,7 @@ Console.WriteLine("Test completed. Press any key to exit...");
 Console.ReadKey();
 
 
-static void TestMethod1(List<WeightedItem> items, int testRuns, IRandomNumber random)
+static void TestMethod1(IWeightedItemList items, int testRuns, IRandomNumber random)
 {
     var selector = new WeightedRandomSelector(items, random);
     var results = new Dictionary<string, int>();
@@ -71,10 +73,10 @@ static void TestMethod1(List<WeightedItem> items, int testRuns, IRandomNumber ra
     stopwatch.Stop();
 
     // Print results
-    PrintResults("Simple Cumulative Selection", results, testRuns, stopwatch.ElapsedTicks, items, 0);
+    PrintResults("Simple Cumulative Selection", results, testRuns, stopwatch.ElapsedTicks, items.Items.ToList(), 0);
 }
 
-static void TestMethod2(List<WeightedItem> items, int testRuns, IRandomNumber random)
+static void TestMethod2(IWeightedItemList items, int testRuns, IRandomNumber random)
 {
     var stopwatch = Stopwatch.StartNew();
     var selector = new PreComputedWeightedSelector(items, random);
@@ -93,10 +95,10 @@ static void TestMethod2(List<WeightedItem> items, int testRuns, IRandomNumber ra
 
     // Print results
     //Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
-    PrintResults("Pre-computed Cumulative Weights", results, testRuns, stopwatch.ElapsedTicks - setupTime, items, setupTime);
+    PrintResults("Pre-computed Cumulative Weights", results, testRuns, stopwatch.ElapsedTicks - setupTime, items.Items.ToList(), setupTime);
 }
 
-static void TestMethod3(List<WeightedItem> items, int testRuns, IRandomNumber random)
+static void TestMethod3(IWeightedItemList items, int testRuns, IRandomNumber random)
 {
     var stopwatch = Stopwatch.StartNew();
     var selector = new AliasMethodSelector(items, random);
@@ -115,10 +117,10 @@ static void TestMethod3(List<WeightedItem> items, int testRuns, IRandomNumber ra
 
     // Print results
     //Console.WriteLine($"Setup time: {setupTime} ticks ({setupTime / 10000.0:F3} ms)");
-    PrintResults("Alias Method", results, testRuns, stopwatch.ElapsedTicks - setupTime, items, setupTime);
+    PrintResults("Alias Method", results, testRuns, stopwatch.ElapsedTicks - setupTime, items.Items.ToList(), setupTime);
 }
 
-static void TestMethod4(List<WeightedItem> items, int testRuns, IRandomNumber random)
+static void TestMethod4(IWeightedItemList items, int testRuns, IRandomNumber random)
 {
     var selector = new WeightedRandomSelectorChatGpt(items, random);
     var results = new Dictionary<string, int>();
@@ -134,7 +136,7 @@ static void TestMethod4(List<WeightedItem> items, int testRuns, IRandomNumber ra
     stopwatch.Stop();
 
     // Print results
-    PrintResults("Simple Selection ChatGpt", results, testRuns, stopwatch.ElapsedTicks, items, 0);
+    PrintResults("Simple Selection ChatGpt", results, testRuns, stopwatch.ElapsedTicks, items.Items.ToList(), 0);
 }
 
 static void PrintResults(string methodName, Dictionary<string, int> results, int totalRuns, long elapsedTicks, List<WeightedItem> originalItems, long setupTime)

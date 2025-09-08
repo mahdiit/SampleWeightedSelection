@@ -9,7 +9,7 @@ public class WeightedItem(string name, double weight)
         _used++;
     }
 
-    public bool HasAny()
+    public bool HasRemainUsage()
     {
         return _used < Weight;
     }

@@ -3,45 +3,44 @@ using Gufel.WeightedSelection.Model;
 
 namespace Gufel.WeightedSelection.Implement.Algorithm;
 
-// Method 3: Alias Method (most efficient for very frequent selections)
-public class AliasMethodSelector : IWeightedRandomSelect
+public class AliasMethodSelector : WeightedRandomSelectBase
 {
-    private readonly int[] _alias;
-    private readonly double[] _prob;
+    private int[] _alias;
+    private double[] _prob;
     private readonly IRandomNumber _random;
-    private readonly List<WeightedItem> _originItems;
-    private List<WeightedItem> _items;
 
-    public AliasMethodSelector(List<WeightedItem> items, IRandomNumber random)
+    public AliasMethodSelector(IWeightedItemList list, IRandomNumber random)
+    : base(list)
     {
-        _originItems = items.Select(x => new WeightedItem(x.Name, x.Weight)).ToList();
-        _items = [];
-        CopyFromOrigin();
-
         _random = random;
+        InternalInit();
+    }
 
-        var n = _items.Count;
+    protected override WeightedItem Select()
+    {
+        var n = Items.Count;
+        var i = _random.NextInt(n);
+
+        return _random.NextDouble() < _prob[i] ? Items[i] : Items[_alias[i]];
+    }
+
+    protected override void Init()
+    {
+        InternalInit();
+    }
+
+    private void InternalInit()
+    {
+        var n = Items.Count;
         _alias = new int[n];
         _prob = new double[n];
 
-        BuildAliasTable();
-    }
-
-    private void CopyFromOrigin()
-    {
-        _items = _originItems.Select(x => new WeightedItem(x.Name, x.Weight)).ToList();
-    }
-
-    private void BuildAliasTable()
-    {
-        var n = _items.Count;
-
         // Normalize weights
-        var totalWeight = _items.Sum(item => item.Weight);
+        var totalWeight = Items.Sum(item => item.Weight);
         if (totalWeight == 0)
             throw new ArgumentException("Total weight cannot be zero");
 
-        var normalizedWeights = _items.Select(item => item.Weight * n / totalWeight).ToArray();
+        var normalizedWeights = Items.Select(item => item.Weight * n / totalWeight).ToArray();
 
         var small = new Queue<int>();
         var large = new Queue<int>();
@@ -83,25 +82,5 @@ public class AliasMethodSelector : IWeightedRandomSelect
             var smallIndex = small.Dequeue();
             _prob[smallIndex] = 1.0;
         }
-    }
-
-    public WeightedItem SelectItem()
-    {
-        var n = _items.Count;
-        var i = _random.NextInt(n);
-
-        var selected = _random.NextDouble() < _prob[i] ? _items[i] : _items[_alias[i]];
-        selected.Use();
-
-        if (selected.HasAny()) return selected;
-
-        _items.Remove(selected);
-
-        if (!_items.Any())
-            CopyFromOrigin();
-
-        BuildAliasTable();
-
-        return selected;
     }
 }
