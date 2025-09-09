@@ -1,8 +1,6 @@
 # Gufel.WeightedSelection
 
-[![CI](https://github.com/mahdiit/SampleWeightedSelection/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/mahdiit/SampleWeightedSelection/actions/workflows/main.yml)
-
-[![codecov](https://codecov.io/gh/mahdiit/SampleWeightedSelection/branch/main/graph/badge.svg)](https://codecov.io/gh/mahdiit/SampleWeightedSelection)
+[![CI](https://github.com/mahdiit/SampleWeightedSelection/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/mahdiit/SampleWeightedSelection/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/mahdiit/SampleWeightedSelection/branch/master/graph/badge.svg)](https://codecov.io/gh/mahdiit/SampleWeightedSelection)
 
 
 
