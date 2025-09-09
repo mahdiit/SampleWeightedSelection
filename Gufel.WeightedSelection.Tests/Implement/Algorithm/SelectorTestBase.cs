@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Gufel.WeightedSelection.Abstract;
 using Gufel.WeightedSelection.Model;
 using Moq;
@@ -51,7 +52,7 @@ public abstract class SelectorTestBase
         };
         var list = new TestWeightedItemList(items);
         var mockRandom = new Mock<IRandomNumber>();
-        
+
         // Setup to always select the first item
         mockRandom.Setup(r => r.NextDouble()).Returns(0.1);
         mockRandom.Setup(r => r.NextDouble(It.IsAny<double>(), It.IsAny<double>())).Returns(1.5);
@@ -94,7 +95,7 @@ public abstract class SelectorTestBase
     public void Selector_WithEmptyList_ThrowsException()
     {
         // Arrange
-        var items = new List<WeightedItem>();
+        var items = new ReadOnlyCollection<WeightedItem>([]);
         var list = new TestWeightedItemList(items);
         var mockRandom = new Mock<IRandomNumber>();
 

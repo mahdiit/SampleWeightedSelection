@@ -2,11 +2,6 @@
 
 namespace Gufel.WeightedSelection.Abstract;
 
-public interface IWeightedRandomSelect
-{
-    WeightedItem SelectItem();
-}
-
 public abstract class WeightedRandomSelectBase(IWeightedItemList list) : IWeightedRandomSelect
 {
     protected IList<WeightedItem> Items = list.Clone();

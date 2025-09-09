@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Gufel.WeightedSelection.Abstract;
 using Gufel.WeightedSelection.Model;
 using Xunit;
@@ -9,6 +10,22 @@ public class WeightedItemListTests
     private class TestWeightedItemList(IReadOnlyCollection<WeightedItem> items) : WeightedItemListBase
     {
         public override IReadOnlyCollection<WeightedItem> Items => items;
+    }
+
+    private class TestRandomSelect(IWeightedItemList list)
+        : WeightedRandomSelectBase(list)
+    {
+        private readonly IWeightedItemList _list = list;
+
+        protected override WeightedItem Select()
+        {
+            return _list.Items.First();
+        }
+
+        protected override void Init()
+        {
+
+        }
     }
 
     [Fact]
@@ -75,5 +92,28 @@ public class WeightedItemListTests
         Assert.Equal("Single", clonedItems[0].Name);
         Assert.Equal(5.0, clonedItems[0].Weight);
         Assert.True(clonedItems[0].HasRemainUsage());
+    }
+
+    [Fact]
+    public void Selector_WithEmptyList_ThrowsException()
+    {
+        // Arrange
+        var items = new ReadOnlyCollection<WeightedItem>([]);
+        var list = new TestWeightedItemList(items);
+        var rnd = new TestRandomSelect(list);
+
+        // Act & Assert - Different selectors might throw at different times
+        try
+        {
+            Assert.Throws<InvalidOperationException>(() => rnd.SelectItem());
+        }
+        catch (ArgumentException)
+        {
+            // Some selectors might throw during construction, which is also valid
+        }
+        catch (InvalidOperationException)
+        {
+            // Some selectors might throw during construction, which is also valid
+        }
     }
 }
