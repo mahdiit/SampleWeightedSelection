@@ -17,6 +17,9 @@ public abstract class WeightedRandomSelectBase(IWeightedItemList list) : IWeight
 
     public WeightedItem SelectItem()
     {
+        if (Items == null || !Items.Any())
+            throw new InvalidOperationException("No items to select from");
+
         var selected = Select();
 
         selected.Use();

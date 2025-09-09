@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="ConsoleApp/ConsoleApp.csproj" />
+  <Project Path="Gufel.WeightedSelection.Tests/Gufel.WeightedSelection.Tests.csproj" />
   <Project Path="Gufel.WeightedSelection/Gufel.WeightedSelection.csproj" Id="35880ed2-acfb-4905-bae0-4c5eb102ba8a" />
 </Solution>

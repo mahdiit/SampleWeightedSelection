@@ -4,9 +4,9 @@ public class WeightedItem(string name, double weight)
 {
     private double _used;
 
-    public void Use()
+    public void Use(double addedValue = 1.0)
     {
-        _used++;
+        _used += addedValue;
     }
 
     public bool HasRemainUsage()
@@ -19,6 +19,6 @@ public class WeightedItem(string name, double weight)
 
     public override string ToString()
     {
-        return $"{Name}: {Weight}%";
+        return $"{Name}: {Weight}";
     }
 }

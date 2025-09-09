@@ -22,6 +22,9 @@ public class WeightedRandomSelector : WeightedRandomSelectBase
         {
             _totalWeight += item.Weight;
         }
+
+        if (_totalWeight == 0)
+            throw new ArgumentException("Total weight cannot be zero");
     }
 
     protected override WeightedItem Select()

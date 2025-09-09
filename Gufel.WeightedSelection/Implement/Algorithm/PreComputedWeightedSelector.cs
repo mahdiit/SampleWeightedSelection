@@ -32,9 +32,6 @@ public class PreComputedWeightedSelector : WeightedRandomSelectBase
 
     protected override WeightedItem Select()
     {
-        if (Items.Count == 0)
-            throw new InvalidOperationException("No items to select from");
-
         var randomValue = _random.NextDouble() * _cumulativeWeights.Last();
 
         var index = BinarySearchCumulative(randomValue);
