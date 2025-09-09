@@ -1,9 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+
+		<PackageId>Gufel.WeightedSelection</PackageId>
+		<Title>Weighted random selection</Title>
+		<Authors>mahdiit</Authors>
+		<Version>1.0.0</Version>
+		<Description>A small .NET library for weighted random selection with multiple algorithms and pluggable RNGs</Description>
+		<PackageReadmeFile>..\README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/mahdiit/SampleWeightedSelection</RepositoryUrl>
+		<PackageTags>algorithm,weighted_list</PackageTags>
+		<PackageIcon>icon.jpg</PackageIcon>
+		<PackageLicenseFile>..\LICENSE.txt</PackageLicenseFile>
+		<PackageProjectUrl>https://github.com/mahdiit/SampleWeightedSelection</PackageProjectUrl>
+		<PackageReleaseNotes Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">Init version</PackageReleaseNotes>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="icon.jpg">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>
