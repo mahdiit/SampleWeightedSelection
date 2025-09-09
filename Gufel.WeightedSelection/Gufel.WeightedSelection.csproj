@@ -12,11 +12,11 @@
 		<Authors>mahdiit</Authors>
 		<Version>1.0.0</Version>
 		<Description>A small .NET library for weighted random selection with multiple algorithms and pluggable RNGs</Description>
-		<PackageReadmeFile>..\README.md</PackageReadmeFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/mahdiit/SampleWeightedSelection</RepositoryUrl>
 		<PackageTags>algorithm,weighted_list</PackageTags>
 		<PackageIcon>icon.jpg</PackageIcon>
-		<PackageLicenseFile>..\LICENSE.txt</PackageLicenseFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/mahdiit/SampleWeightedSelection</PackageProjectUrl>
 		<PackageReleaseNotes Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">Init version</PackageReleaseNotes>
 
